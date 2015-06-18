@@ -1,3 +1,39 @@
 ## Practical Machine Learning
 ### Assignment
 -- Author: hpschu --
+
+```{r}
+library(caret)
+```
+
+
+```{r}
+# Download data:
+download.file('https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv', method = 'curl', destfile = 'training.csv')
+download.file('https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv', method = 'curl', destfile = 'testing.csv')
+
+training <- as.data.frame(read.table('training.csv', sep=",", header = T))
+testing <- as.data.frame(read.table('testing.csv', sep=",", header = T))
+summary(training)
+summary(testing)
+Ntr <- dim(training)[1]
+Nte <- dim(testing)[1]
+```
+
+The X-variable seems to work as an index variable and is thus removed from the training- and test sets. Additionally, max_roll_belt, max_picth_belt, min_roll_belt, min_pitch_belt, amplitude_roll_belt, amplitude_pitch_belt, and var_total_accel_belt had a vast amount of missing variables. These variables were also removed.
+
+```{r}
+training <- subset(as.data.frame(training), select=-c(1, 10:16))
+
+View(training)
+
+
+nearZeroVar(rbind(training[, -dim(training)[2]], testing[,-dim(testing)[2]]), saveMetrics = T)
+zeroVar <- nearZeroVar(rbind(training[, -dim(training)[2]], testing[,-dim(testing)[2]]))
+
+training <- training[,-zeroVar]
+testing <- testing[,-zeroVar]
+View(training)
+View(testing)
+```
+

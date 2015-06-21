@@ -21,7 +21,7 @@ set.seed(1234)
 data <- as.data.frame(read.table('training.csv', sep=",", header = T))
 #####################################################################
 # TESTING!!!: #######################################################
-data <- data[createDataPartition(data$classe, p = 0.3, list = F),] ##
+#data <- data[createDataPartition(data$classe, p = 0.3, list = F),] ##
 #####################################################################
 
 test_set <- as.data.frame(read.table('testing.csv', sep=",", header = T))
@@ -51,6 +51,7 @@ Nas <- apply(data, MARGIN = 2, function(x){if(TRUE %in% unique(is.na(x))) return
 removeCol <- unique(c(removeCol, which(colnames(data) %in% colnames(data)[Nas])))
 
 data <- data[,-removeCol]
+test_set <- subset(test_set, select = colnames(data))
 
 # Recode users in alphabetical order from 1 to nth user
 
@@ -63,19 +64,30 @@ for (i in 1:length(users)){
 
 data$user_name <- as.factor(tempusers)
 
+
+user_name <- test_set$user_name
+tempusers <- vector()
+for (i in 1:length(users)){
+  tempusers[user_name == users[i]] <- i
+}
+test_set$user_name <- as.factor(tempusers)
 ```
 
 After cleaning, 51 variables were left for the prediction. Next, the data was divided into training and testing sets. PCA with Z-normalization was used for the data to reduce dimensionality.
 
 ```{r}
-trainInd <- createDataPartition(y, p = 0.7, list=F)
-data <- cbind(data, y)
+#trainInd <- createDataPartition(y, p = 0.7, list=F)
+#data <- cbind(data, y)
 
-training <- data[trainInd,]
-testing <- data[-trainInd,]
+#training <- data[trainInd,]
+#testing <- data[-trainInd,]
+
+training <- data
 
 # Fit control settings, set cross validation to 10-fold repeated cv with 3 repeats.
 
 model <- train(y ~ ., method = 'rf', preProcess = c('center', 'scale', 'pca'), data = training, trainControl = trainControl(method = 'repeatedcv', number = 10, repeats = 3))
+
+
 
 ```

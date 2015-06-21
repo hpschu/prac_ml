@@ -89,4 +89,4 @@ acc <- conf$overall[1]
 
 ```
 
-The out of sample error rate is estimated at approximately 3% for the prediction. Furthermore, this indicates that from 20 samples, about one is predicted to the wrong class.
+The cross validation was conducted with 10-fold repeated cv with 3 repeats. The out of sample error rate is estimated at approximately 3% for the prediction. Furthermore, this indicates that from 20 samples, about one is predicted to the wrong class.

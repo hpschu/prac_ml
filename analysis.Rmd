@@ -76,18 +76,21 @@ test_set$user_name <- as.factor(tempusers)
 After cleaning, 51 variables were left for the prediction. Next, the data was divided into training and testing sets. PCA with Z-normalization was used for the data to reduce dimensionality.
 
 ```{r}
-#trainInd <- createDataPartition(y, p = 0.7, list=F)
-#data <- cbind(data, y)
+trainInd <- createDataPartition(y, p = 0.7, list=F)
+data <- cbind(data, y)
 
-#training <- data[trainInd,]
-#testing <- data[-trainInd,]
+training <- data[trainInd,]
+testing <- data[-trainInd,]
 
-training <- data
+#training <- data
 
 # Fit control settings, set cross validation to 10-fold repeated cv with 3 repeats.
 
 model <- train(y ~ ., method = 'rf', preProcess = c('center', 'scale', 'pca'), data = training, trainControl = trainControl(method = 'repeatedcv', number = 10, repeats = 3))
 
-
+conf <- confusionMatrix(predict(model, testing[,-ncol(testing)]), reference = testing[,ncol(testing)])
+acc <- conf$overall[1]
 
 ```
+
+The out of sample error rate is estimated at approximately 3% for the prediction. Furthermore, this indicates that from 20 samples, about one is predicted to the wrong class.
